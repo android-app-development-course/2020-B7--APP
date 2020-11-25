@@ -1,0 +1,26 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/login_by_message_cancel"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="10dp"
+        android:background="@mipmap/arrow_back" />
+
+    <Button
+        android:id="@+id/login_by_password"
+        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_weight="1"
+        android:text="密码登录"
+        android:textColor="@android:color/darker_gray"
+        android:background="@android:color/transparent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>

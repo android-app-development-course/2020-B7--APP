@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--个人信息界面（编辑资料界面）的每个item-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:paddingLeft="0dp">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbarEditing"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        app:theme="@style/ToolbarTheme" />
+
+
+    <LinearLayout
+        android:id="@+id/item_group_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginRight="@dimen/padding_left_and_right"
+        android:layout_marginLeft="@dimen/padding_left_and_right"
+        android:orientation="vertical">
+
+
+        <com.example.dacnce.widget.MyEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/name_edit_view"
+            android:hint="请输入新的昵称"
+            android:textSize="18sp"
+            android:drawableEnd="@mipmap/ic_clear"
+            android:theme="@style/MyEditText">
+        </com.example.dacnce.widget.MyEditText>
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray9" />
+</LinearLayout>

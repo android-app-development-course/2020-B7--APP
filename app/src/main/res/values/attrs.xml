@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="SampleCircleImageView">
+        <!-- 源图片 -->
+        <attr name="src" format="reference" />
+        <!-- 圆角大小 -->
+        <attr name="radius" format="dimension" />
+    </declare-styleable>
+</resources>

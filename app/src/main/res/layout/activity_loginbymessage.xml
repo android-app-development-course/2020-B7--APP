@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/login_by_message_titlle"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center"
+        android:textSize="30dp"
+        android:editable="false"
+        android:text="登录或注册" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/login_input_phone"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:ems="10"
+            android:hint="请输入手机号"
+            android:inputType="phone" />
+
+
+        <EditText
+            android:id="@+id/login_input_code"
+            android:layout_width="170dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/login_input_phone"
+            android:layout_below="@+id/login_input_phone"
+            android:layout_marginTop="20dp"
+            android:hint="请输入验证码"
+            android:inputType="textPassword" >
+        </EditText>
+        <Button
+            android:id="@+id/login_request_code_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/login_input_phone"
+            android:layout_alignTop="@+id/login_input_code"
+            android:textColor="@android:color/holo_red_light"
+            android:background="@android:color/transparent"
+            android:text="获取验证码" />
+
+
+
+        <Button
+            android:id="@+id/login_commit_btn"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/login_input_code"
+            android:layout_below="@+id/login_input_code"
+            android:layout_marginTop="44dp"
+            android:text="确定"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_circle_shape"
+            />
+
+    </RelativeLayout>
+</LinearLayout>

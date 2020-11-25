@@ -1,0 +1,30 @@
+<resources>
+    <dimen name="text_margin">16dp</dimen>
+    <dimen name="sp_28">28sp</dimen>
+    <dimen name="sp_17">17sp</dimen>
+    <dimen name="sp_12">12sp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">32px</dimen>
+    <dimen name="activity_vertical_margin">32px</dimen>
+
+    <!--主界面底部图标大小-->
+    <dimen name="main_bottom_iv_horizontal_size">58px</dimen>
+    <dimen name="main_bottom_iv_vertical_size">54px</dimen>
+
+    <!--列表item间距-->
+    <dimen name="item_margin_left_and_right">10dp</dimen>
+    <dimen name="item_margin_top_and_bottom">10dp</dimen>
+
+
+    <!--界面的padding-->
+    <dimen name="padding_top_and_bottom">30dp</dimen>
+    <dimen name="padding_left_and_right">20dp</dimen>
+
+    <!--消息框的上下margin-->
+    <dimen name="message_padding">3dp</dimen>
+
+
+    <dimen name="toolbar_action_menu_text">3dp</dimen>
+
+</resources>

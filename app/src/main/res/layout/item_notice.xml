@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="70dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_image"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/example5"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="17dp"/>
+
+    <LinearLayout
+        android:layout_marginStart="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/user_image"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_marginEnd="15dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="街舞潮流文化小秘书"
+                android:textSize="12sp"
+                android:textColor="@color/blue2"
+                android:layout_alignParentStart="true"/>
+
+            <TextView
+                android:id="@+id/dy_or_com"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="赞了你的评论"
+                android:layout_toEndOf="@id/user_name"
+                android:textSize="@dimen/sp_12"
+                android:layout_marginStart="10dp"
+                android:layout_toStartOf="@id/text_date"/>
+
+            <TextView
+                android:id="@+id/text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="11月21日"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentTop="true"
+                android:textSize="9sp"/>
+
+        </RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/content_notice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="我分享：舞蹈风暴民间反串艺人的一生与现代人具象化的万搬思绪像碰撞"
+                android:textSize="@dimen/sp_12"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray5"
+        android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>
