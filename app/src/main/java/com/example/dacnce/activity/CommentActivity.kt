@@ -281,7 +281,7 @@ class CommentActivity : AppCompatActivity() {
                 //Toast.makeText(this,"Finish PersonInfoActivity",Toast.LENGTH_SHORT).show()
             }
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected(item)
     }
 
 }
