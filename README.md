@@ -4,6 +4,8 @@
 
 ##### `源代码`已上传
 
+服务器源代码文件路径：[MyDanceFileWeb-add-gb2312](MyDanceFileWeb-add-gb2312)
+
 ### 第一阶段任务
 
  （1）选择移动应用开发的主题和内容。
@@ -62,3 +64,37 @@ UI实机演示视频：[UI实机演示视频.mp4](UI实机演示视频.mp4)
 最终产品演示视频mp4：[最终产品演示视频.mp4](最终产品演示视频.mp4)
 
 apk文件：[app-release.apk](app-release.apk)
+
+### 源代码食用方法
+
+因为图片和视频采用的是本地服务器，所以需要修改本地服务器的配置文件，
+
+配置文件在app\src\main\java\com\example\dacnce\NetworkUtils.kt文件
+
+修改主机地址和web目录(根据服务器配置内容进行修改-->`SEVER_IP`, `SERVLET_PRE_PATH`)
+
+```kotlin
+const val APP_ID = "ca1186997e987d6205110e4c23547afb"
+private const val PROTOCOL = "http://"
+private const val SEVER_IP = "10.242.174.63"
+private const val PORT = "8080"
+private const val COM = "$PROTOCOL$SEVER_IP:$PORT"
+
+//IP1:10.243.129.166
+//IP2:192.168.43.178
+
+//文件保存路径
+const val PIC_PRE_PATH = "$COM/DanceFile"
+
+//web前缀目录
+const val SERVLET_PRE_PATH = "$COM/MyDanceFileWeb"
+
+//单个文件servlet
+const val POST_PIC_PATH_SERVLET = "$SERVLET_PRE_PATH/FileServlet"
+
+//多个文件servlet
+const val PIC_ARRAY_SERVLET = "$SERVLET_PRE_PATH/PicArrayServlet"
+
+//mp4 文件servlet
+const val MP4_SERVLET = "$SERVLET_PRE_PATH/Mp4Servlet"
+```
