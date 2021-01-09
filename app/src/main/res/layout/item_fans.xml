@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_fans"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="60dp"
@@ -34,29 +35,9 @@
             android:text="让我们成为好友吧？" />
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:orientation="horizontal"
-        android:paddingEnd="5dp"
-        android:layout_centerVertical="true">
-        <TextView
-            android:id="@+id/tv_cancel_follow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="移除"
-            android:textColor="@color/red1"
-            android:textSize="15dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:layout_marginEnd="@dimen/padding_left_and_right"/>
-
-    </LinearLayout>
     <View
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="@color/gray7"/>
+        android:background="@color/gray5"/>
 </RelativeLayout>

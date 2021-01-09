@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dacnce.R
-import com.example.dacnce.activity.PostPicture
+import com.example.dacnce.bean.PostPicture
 
 
 class PostPictureAdapter(val context: Context,val postPictureList:List<PostPicture>)

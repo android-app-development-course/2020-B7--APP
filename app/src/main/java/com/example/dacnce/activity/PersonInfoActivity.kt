@@ -1,32 +1,41 @@
 package com.example.dacnce.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.app.ProgressDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Bundle
-import android.os.Environment
-import android.os.StrictMode
+import android.os.*
 import android.os.StrictMode.VmPolicy
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import cn.bmob.v3.BmobQuery
+import cn.bmob.v3.BmobUser
+import cn.bmob.v3.exception.BmobException
+import cn.bmob.v3.listener.QueryListener
+import com.bumptech.glide.Glide
 import com.example.dacnce.R
+import com.example.dacnce.bean.User
+import com.example.dacnce.utils.*
 import kotlinx.android.synthetic.main.activity_person_info.*
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.*
 import java.util.*
+import kotlin.concurrent.thread
 
-
-class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
+class PersonInfoActivity : BaseActivity(),View.OnClickListener {
 
     private var choiceSex = -1
     private val c: Calendar = Calendar.getInstance()
@@ -34,17 +43,27 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
     private val month = c.get(Calendar.MONTH)
     private val day = c.get(Calendar.DAY_OF_MONTH)
 
+    private var mSaveDialog: ProgressDialog? = null
+
+    private val messageHandler: Handler = @SuppressLint("HandlerLeak")
+    object : Handler() {
+        override fun handleMessage(msg: Message) {
+            mSaveDialog!!.dismiss()
+            //Toasty.success(this@PersonInfoActivity,"上传图片成功",Toast.LENGTH_SHORT).show()
+        }
+    }
 
     /*相机和相册权限相关的函数*/
     private val permissions = arrayOf<String>(
         Manifest.permission.CAMERA,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
+
     //获取权限
     private fun getPermission() {
         if (EasyPermissions.hasPermissions(this, *permissions)) {
             //已经打开权限
-            Toast.makeText(this, "已经申请相关权限", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(this, "已经申请相关权限", Toast.LENGTH_SHORT).show()
         } else {
             //没有打开相关权限、申请权限
             EasyPermissions.requestPermissions(this, "需要获取您的相册、照相使用权限", 1, *permissions)
@@ -71,9 +90,14 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
         Toast.makeText(this, "请同意相关权限，否则功能无法使用", Toast.LENGTH_SHORT).show()
     }
 
-    private val GET_BACKGROUND_FROM_CAPTURE_RESOULT = 1
-    private val RESULT_REQUEST_CODE = 2
-    private val TAKE_PHOTO = 3
+    companion object{
+        const val GET_BACKGROUND_FROM_CAPTURE_RESOULT = 1
+        const val RESULT_REQUEST_CODE = 2
+        const val TAKE_PHOTO = 3
+        const val INTENT_NICKNAME = 4
+        const val INTENT_SIGNATURE = 5
+        val MEDIA_TYPE_PNG: MediaType? = "image/png".toMediaTypeOrNull()
+    }
     private var photoUri //相机拍照返回图片路径
             : Uri? = null
     private var outputImage: File? = null
@@ -82,6 +106,10 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
     private fun selectCamera() {
         //创建file对象，用于存储拍照后的图片，这也是拍照成功后的照片路径
         outputImage = File(this.externalCacheDir, "camera_photos.jpg")
+        if(outputImage!=null){
+            //Log.d("PersonInfoActivity", outputImage!!.absolutePath)
+            //:  /storage/emulated/0/Android/data/com.example.dacnce/cache/camera_photos.jpg
+        }
         try {
             //判断文件是否存在，存在删除，不存在创建
             if (outputImage!!.exists()) {
@@ -109,9 +137,11 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
     private var cropImgUri: Uri? = null
 
     //裁剪图片
-    fun cropRawPhoto(uri: Uri?) {
+    private fun cropRawPhoto(uri: Uri?) {
         //创建file文件，用于存储剪裁后的照片
         val cropImage = File(getExternalFilesDir(null), "crop_image.jpg")
+        //:  /storage/emulated/0/Android/data/com.example.dacnce/files/crop_image.jpg
+        //Log.d("PersonInfoActivity",cropImage.absolutePath)
         val path = cropImage.absolutePath
         try {
             if (cropImage.exists()) {
@@ -147,27 +177,111 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
                 photoUri = data?.data
                 cropRawPhoto(photoUri)
             }
-            TAKE_PHOTO -> cropRawPhoto(photoUri)
-            RESULT_REQUEST_CODE -> if (cropImgUri != null) {
-                try {
+            TAKE_PHOTO -> {
+                cropRawPhoto(photoUri)
+            }
+            RESULT_REQUEST_CODE -> {
+                if (cropImgUri != null) {
                     val headImage = BitmapFactory.decodeStream(
                         this.contentResolver.openInputStream(cropImgUri!!)
                     )
-                    rv_edit_head.setImageBitmap(headImage)
-                    getFile(headImage) //把Bitmap转成File
-                    //                        UpLoadIcon(getFile(headImage));   //上传图片文件到服务器
-                } catch (e: java.lang.Exception) {
-                    e.printStackTrace()
+                    //rv_edit_head.setImageBitmap(headImage)
+                    Glide.with(this).load(headImage).into(rv_edit_head)
+                    //getFile(headImage) //把Bitmap转成File
+                    //UpLoadIcon(getFile(headImage));   //上传图片文件到服务器
+                    //Log.d("onActivityResult",photoUri.toString())
+                    val str = ParseUtils.getPath2uri(this@PersonInfoActivity,photoUri)
+                    //: /storage/emulated/0/Android/data/com.example.dacnce/cache/camera_photos.jpg
+//                    if(str!= null){
+//                        runOnUiThread {
+//                            mSaveDialog = ProgressDialog.show(
+//                                this@PersonInfoActivity,
+//                                "上传图片",
+//                                "图片正在上传，请稍等...",
+//                                true
+//                            )
+//                        }
+//
+//                        fileUpload(object : Callback {
+//                            override fun onFailure(call: Call, e: IOException) {
+//                                Toast.makeText(this@PersonInfoActivity, "上传失败！", Toast.LENGTH_SHORT).show()
+//                                e.printStackTrace()
+//                            }
+//                            override fun onResponse(call: Call, response: Response) {
+//                                Toast.makeText(this@PersonInfoActivity, "上传成功！", Toast.LENGTH_SHORT).show()
+//                                val message = response.body()?.string()
+//                                if(message != null){
+//                                    Log.d("onActivityResult",message)
+//                                    BmobUtils.updateUserImageURL(message)
+//                                }
+//                                Thread.sleep(1000)
+//                                messageHandler.sendMessage(messageHandler.obtainMessage())
+//                            }
+//                        },str)
+
+//                    }
+                    thread {
+                        if(str!=null){
+                            //Log.d("pathhh",str)
+                            runOnUiThread {
+                                mSaveDialog = ProgressDialog.show(
+                                    this@PersonInfoActivity,
+                                    "上传图片",
+                                    "图片正在上传，请稍等...",
+                                    true
+                                )
+                            }
+
+                            fileUpload(object : Callback {
+                                override fun onFailure(call: Call, e: IOException) {
+                                    runOnUiThread {
+                                        Toast.makeText(this@PersonInfoActivity, "上传失败！", Toast.LENGTH_SHORT).show()
+                                        e.printStackTrace()
+                                        messageHandler.sendMessage(messageHandler.obtainMessage())
+                                    }
+                                }
+
+                                override fun onResponse(call: Call, response: Response) {
+                                    runOnUiThread {
+                                        Toast.makeText(this@PersonInfoActivity, "上传成功！", Toast.LENGTH_SHORT).show()
+                                        val message = response.body?.string()
+                                        if(message != null){
+                                            //Log.d("onActivityResult",message)
+                                            BmobUtils.updateUserImageURL(message)
+                                        }
+                                        messageHandler.sendMessage(messageHandler.obtainMessage())
+                                    }
+                                }
+                            },str)
+                        }
+                    }
+
+                } else {
+                    Toast.makeText(this, "cropImgUri为空！", Toast.LENGTH_SHORT).show()
                 }
-            } else {
-                Toast.makeText(this, "cropImgUri为空！", Toast.LENGTH_SHORT).show()
+            }
+            INTENT_NICKNAME -> {
+                val newNickName = data?.getStringExtra("changeNickName")
+                //Log.d("onActivityResult",newNickName.toString())
+                if(newNickName!= null){
+                    tv_name.text = newNickName
+                    BmobUtils.updateUserNickName(newNickName)
+                }
+            }
+            INTENT_SIGNATURE -> {
+                val newSignature = data?.getStringExtra("changeSignature")
+                //Log.d("onActivityResult",newSignature.toString())
+                if(newSignature != null){
+                    tv_signature.text = newSignature
+                    BmobUtils.updateUserSignature(newSignature)
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
     //把bitmap转成file
-    fun getFile(bitmap: Bitmap): File? {
+    private fun getFile(bitmap: Bitmap): File? {
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 50, baos)
         val file =
@@ -212,11 +326,16 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "编辑信息"
 
+        getPermission()
+
         //获取权限
         initPermission()
 
         //设置监听器
         initView()
+
+        //初始化内容
+        initContent()
 
         val builder = VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
@@ -225,7 +344,8 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.bar_title_with_save,menu)
+        //保存按钮
+        //menuInflater.inflate(R.menu.bar_title_with_save,menu)
         return true
     }
 
@@ -234,7 +354,6 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
             android.R.id.home -> {
                 //toolBar点击返回按钮，销毁单前activity
                 finish()
-                Toast.makeText(this,"Finish PersonInfoActivity",Toast.LENGTH_SHORT).show()
             }
             R.id.toolbarSave -> {
                 //数据库操作
@@ -253,6 +372,34 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
         rv_edit_head.setOnClickListener(this)
     }
 
+    private fun initContent(){
+        //登录情况下，才会能够进入这页面
+        if(NetworkUtils.isConnected()){
+            val user:User = BmobUser.getCurrentUser(User::class.java)
+            if(user!=null){
+                val bmobQuery:BmobQuery<User> = BmobQuery<User>()
+                bmobQuery.getObject(user.objectId,object:QueryListener<User>(){
+                    override fun done(p0: User, p1: BmobException?) {
+                        if(p1 == null && p0 != null){
+                            tv_id.text = p0.username
+                            tv_name.text = p0.user_nickname
+                            tv_sex.text = p0.user_sex
+                            tv_birthday.text = p0.user_bd
+                            tv_signature.text = p0.user_signature
+                            //Log.d("PersonInfoActivity",NetworkUtils.PIC_PRE_PATH + "/images" + p0.image_url)
+                            Glide.with(this@PersonInfoActivity)
+                                .load(NetworkUtils.PIC_PRE_PATH + "/images" + p0.image_url)
+                                .centerCrop()
+                                .placeholder(R.drawable.nav_icon)
+                                .into(rv_edit_head)
+                        }
+                    }
+                })
+            }
+        }
+    }
+
+
     //获取权限
     private fun initPermission(){
 
@@ -264,7 +411,8 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
                 //编辑昵称的LinearLayout的点击事件
                 val intent = Intent(this,EditNameActivity::class.java)
                 //应该带 user.id ,user.name过去，显示已有的名字，在此基础修改
-                startActivity(intent);
+                intent.putExtra("nickName",tv_name.text.toString())
+                startActivityForResult(intent, INTENT_NICKNAME);
             }
             R.id.ll_sex -> {
                 val sexListItem = arrayOf("男","女","保密")
@@ -273,7 +421,9 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
                     .setSingleChoiceItems(sexListItem,-1){ dialog: DialogInterface?, which: Int ->
                         choiceSex = which
                     }.setPositiveButton("确定",DialogInterface.OnClickListener { dialog, which ->
-                        if(choiceSex!= -1)tv_sex.text = sexListItem[choiceSex] })
+                        if(choiceSex!= -1)tv_sex.text = sexListItem[choiceSex]
+                        BmobUtils.updateUserSex(sexListItem[choiceSex])
+                    })
                     .setNegativeButton("取消",null)
                     .setCancelable(true) //可以通过回退按钮退出关闭Dialog
                     .create()
@@ -282,13 +432,14 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
             R.id.ll_birthday -> {
                 DatePickerDialog(this,DatePickerDialog.OnDateSetListener { view, year, month, dayOfMonth ->
                     tv_birthday.text = ("" + year + "年" + (month+1) + "月" + dayOfMonth + "日")
+                    BmobUtils.updateUserBirthday("" + year + "年" + (month+1) + "月" + dayOfMonth + "日")
                 },year,month,day).show()
             }
             R.id.ll_signature -> {
                 val intent = Intent(this,SignatureActivity::class.java)
-                startActivity(intent);
+                intent.putExtra("signature",tv_signature.text.toString())
+                startActivityForResult(intent, INTENT_SIGNATURE);
             }
-
             R.id.rv_edit_head->{
                 showListDialog()
             }
@@ -298,24 +449,38 @@ class PersonInfoActivity : AppCompatActivity(),View.OnClickListener {
     override fun onStart() {
         super.onStart()
         //从数据库读取数据
-
-
         //从以前编辑过的图片中设置头像，若不存在则加载默认头像
+//        val ImageFile = File(getExternalFilesDir(null), "crop_image.jpg")
+//        if (ImageFile.exists()) {
+//            try {
+//                val bm = BitmapFactory.decodeFile(ImageFile.getPath())
+//                rv_edit_head.setImageBitmap(bm)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//        } else {
+//            rv_edit_head.setImageDrawable(resources.getDrawable(R.drawable.nav_icon))
+//            //Toast.makeText(this, "crop_image.jpg 为空！", Toast.LENGTH_SHORT).show()
+//        }
 
-        //从以前编辑过的图片中设置头像，若不存在则加载默认头像
-        val ImageFile = File(getExternalFilesDir(null), "crop_image.jpg")
-        if (ImageFile.exists()) {
-            try {
-                val bm = BitmapFactory.decodeFile(ImageFile.getPath())
-                rv_edit_head.setImageBitmap(bm)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        } else {
-            rv_edit_head.setImageDrawable(resources.getDrawable(R.drawable.nav_icon))
-            //Toast.makeText(this, "crop_image.jpg 为空！", Toast.LENGTH_SHORT).show()
-        }
+    }
 
+
+    private fun fileUpload(callback: Callback, path:String){
+        val file = File(path)
+        //Log.d("fileUpload",path)
+        val client = OkHttpClient()
+        val requestBody:RequestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("username","test")
+            .addFormDataPart("image",file.name, RequestBody.create(MEDIA_TYPE_PNG,file))
+            .build()
+        //POST请求
+        val request = Request.Builder()
+            .url(NetworkUtils.SERVLET_PRE_PATH+"/Dservlet")
+            .post(requestBody)
+            .build()
+        client.newCall(request).enqueue(callback)
     }
 }
 

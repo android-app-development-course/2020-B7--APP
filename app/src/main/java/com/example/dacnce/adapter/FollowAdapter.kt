@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.dacnce.R
 import com.example.dacnce.activity.DynamicActivity
+import com.example.dacnce.activity.PersonDynamicActivity
 import com.example.dacnce.bean.FollowItem
 import com.example.dacnce.bean.PictureItem
+import com.example.dacnce.utils.NetworkUtils
 import de.hdodenhof.circleimageview.CircleImageView
 
 class FollowAdapter(val context:Context, private val followItemList:List<FollowItem>) : RecyclerView.Adapter<FollowAdapter.ViewHolder>() {
@@ -22,37 +24,34 @@ class FollowAdapter(val context:Context, private val followItemList:List<FollowI
         private val userName: TextView = view.findViewById(R.id.user_name)
         private val personalSignature: TextView = view.findViewById(R.id.personal_signature)
         private val innerRecyclerView: RecyclerView = view.findViewById(R.id.inner_recyclerView)
-        private lateinit var pictureAdapter: PictureAdapter
+        private lateinit var followPictureAdapter: FollowPictureAdapter
 
         fun bind(position:Int,followItem:FollowItem){
-            Glide.with(context).load(followItem.user_image).into(userImage)
+            Glide.with(context)
+                .load(NetworkUtils.PIC_PRE_PATH + "/images" + followItem.user_image)
+                .placeholder(R.drawable.nav_icon)
+                .into(userImage)
             userName.text = followItem.user_name
             personalSignature.text = followItem.personal_signature
 
-            //获取followItem. userName .的相关图片
-            //这里随便插入点数据
-
-            val pictureItemList = ArrayList<PictureItem>()
-            pictureItemList.add(PictureItem(R.drawable.example,true))
-            pictureItemList.add(PictureItem(R.drawable.example,false))
-            pictureItemList.add(PictureItem(R.drawable.example,false))
-            pictureItemList.add(PictureItem(R.drawable.example,true))
-            pictureItemList.add(PictureItem(R.drawable.example,false))
-            pictureItemList.add(PictureItem(R.drawable.example,true))
 
             val layoutManager = LinearLayoutManager(context)
             layoutManager.orientation = LinearLayoutManager.HORIZONTAL
 
             innerRecyclerView.layoutManager = layoutManager
-            pictureAdapter = PictureAdapter(context,pictureItemList)
-            innerRecyclerView.adapter = pictureAdapter
+
+            followPictureAdapter = FollowPictureAdapter(context,followItem.pictureList)
+
+            innerRecyclerView.adapter = followPictureAdapter
 
             userName.setOnClickListener {
-                val intent = Intent(context,DynamicActivity::class.java)
+                val intent = Intent(context,PersonDynamicActivity::class.java)
+                intent.putExtra("userObjectId",followItem.user.objectId)
                 context.startActivity(intent)
             }
             userImage.setOnClickListener {
-                val intent = Intent(context,DynamicActivity::class.java)
+                val intent = Intent(context,PersonDynamicActivity::class.java)
+                intent.putExtra("userObjectId",followItem.user.objectId)
                 context.startActivity(intent)
             }
         }

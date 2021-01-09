@@ -6,9 +6,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import cn.bmob.v3.BmobQuery
+import cn.bmob.v3.BmobUser
+import cn.bmob.v3.datatype.BmobPointer
+import cn.bmob.v3.exception.BmobException
+import cn.bmob.v3.listener.FindListener
+import com.example.dacnce.DanceApplication
 import com.example.dacnce.R
 import com.example.dacnce.adapter.FansAdapter
 import com.example.dacnce.bean.FansItem
+import com.example.dacnce.bean.User
+import com.example.dacnce.bean.UserData
+import com.example.dacnce.utils.BmobUtils
+import com.example.dacnce.utils.NetworkUtils
+import com.example.dacnce.utils.SPUtils
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.activity_fans.*
 
 
@@ -16,6 +28,8 @@ class FansActivity : AppCompatActivity() {
 
     private lateinit var fansAdapter: FansAdapter
     private val fansItemList = ArrayList<FansItem>()
+
+    private var count = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,17 +40,17 @@ class FansActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "我的粉丝"
 
-        fansItemList.add(FansItem(R.drawable.example,"神奇小宝贝","傻人有傻福"))
-        fansItemList.add(FansItem(R.drawable.example2,"神奇小宝贝2","傻人有傻福"))
-        fansItemList.add(FansItem(R.drawable.example3,"神奇小宝贝3","傻人有傻福"))
-        fansItemList.add(FansItem(R.drawable.example4,"神奇小宝贝4","傻人有傻福"))
-
-
         val layoutManager = LinearLayoutManager(this)
         rv_recyclerView.layoutManager = layoutManager
         fansAdapter = FansAdapter(this,fansItemList)
         rv_recyclerView.adapter = fansAdapter
 
+
+        if(NetworkUtils.isConnected()){
+            refreshFansItem()
+        }else{
+            Toasty.error(DanceApplication.context,"无网络连接",Toast.LENGTH_SHORT).show()
+        }
 
         //创建分割线对象，第一个参数为上下文，第二个参数为RecyclerView排列方向
         //val decoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
@@ -44,6 +58,59 @@ class FansActivity : AppCompatActivity() {
         //rv_recyclerView.addItemDecoration(decoration)
 
 
+    }
+
+    private fun refreshFansItem(){
+        count = 0
+        var currentUser = BmobUser.getCurrentUser(User::class.java)
+        //先获取所有user的objectId
+        val bmobQuery: BmobQuery<User> = BmobQuery<User>()
+        bmobQuery.findObjects(object :FindListener<User>(){
+            override fun done(p0: MutableList<User>?, p1: BmobException?) {
+                if(p1 == null){
+                    if(p0!=null){
+                        for(p in p0){
+                            val userQuery: BmobQuery<User> = BmobQuery<User>()
+                            userQuery.addWhereRelatedTo("follows", BmobPointer(p))
+                            userQuery.findObjects(object :FindListener<User>(){
+                                override fun done(userList: MutableList<User>?, exception: BmobException?) {
+                                    if(exception == null){
+                                        if(userList!=null){
+                                            var flag:Boolean = false
+                                            for(u in userList){
+                                                if(u.objectId == currentUser.objectId){
+                                                    flag = true
+                                                    count++
+                                                    SPUtils.put(DanceApplication.context,"fans_cal",true)
+                                                    SPUtils.put(DanceApplication.context,"fans_count",count)
+                                                    break
+                                                }
+                                            }
+                                            if(flag){
+                                                runOnUiThread{
+                                                    val model = FansItem(
+                                                        p.image_url!!,
+                                                        p.user_nickname!!,
+                                                        p.user_signature!!,
+                                                        p.objectId,
+                                                        p
+                                                    )
+                                                    fansItemList.add(model)
+                                                    fansAdapter.notifyDataSetChanged()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            })
+                        }
+                    }
+                }else{
+                    Toast.makeText(this@FansActivity,"${p1.message}",Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        })
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

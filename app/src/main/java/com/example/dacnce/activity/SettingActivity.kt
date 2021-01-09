@@ -31,7 +31,6 @@ class SettingActivity : AppCompatActivity() {
             android.R.id.home -> {
                 //toolBar点击返回按钮，销毁单前activity
                 finish()
-                Toast.makeText(this,"Finish ThumbsActivity", Toast.LENGTH_SHORT).show()
             }
         }
         return super.onOptionsItemSelected(item)

@@ -30,4 +30,15 @@
     <color name="red0">#FFB8B9</color>
     <color name="red1">#ff3336</color>
 
+    <color name="icon_color">#FF0000</color>
+
+    <color name="icon_color1">#EA5A5A</color>
+
+    <!--半黑-->
+    <color name="half_black">#808080</color>
+    <color name="half_black_2">#8a8a8a</color>
+
+    <!--全黑-->
+    <color name="myBlack">#000000</color>
+
 </resources>

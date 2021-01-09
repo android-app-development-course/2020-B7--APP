@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_toEndOf="@id/user_image"
-            android:layout_toStartOf="@id/followBtn"
+            android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp">
 
@@ -47,13 +47,6 @@
 
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/followBtn"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/follow"/>
 
     </RelativeLayout>
 

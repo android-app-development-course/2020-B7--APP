@@ -30,12 +30,14 @@
             tools:text="username" />
 
         <ImageView
-            android:id="@+id/more"
+            android:id="@+id/followBtn"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_alignParentEnd="true"
-            android:src="@drawable/more"
-            android:layout_alignTop="@id/user_name"/>
+            android:src="@drawable/follow_before"
+            android:layout_alignTop="@id/user_name"
+            android:clickable="true"
+            android:focusable="true"/>
 
     </RelativeLayout>
 
@@ -48,7 +50,6 @@
             android:id="@+id/content_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="这就是街舞芜湖~~~~~"
             tools:text="这就是街舞芜湖~~~~~"
             android:paddingBottom="10dp"
             android:textSize="14sp"
@@ -74,6 +75,7 @@
         </androidx.recyclerview.widget.RecyclerView>
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/video_cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
@@ -86,10 +88,11 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
+                    android:id="@+id/video_image"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:scaleType="centerCrop"
-                    android:background="@drawable/example3"
+                    android:background="@color/white"
                     />
 
                 <ImageView
@@ -139,7 +142,7 @@
             android:layout_toEndOf="@id/like"
             android:layout_centerVertical="true"
             android:layout_marginStart="2dp"
-            android:text="12"
+            android:text="0"
             tools:text="12"/>
 
         <ImageView
@@ -158,7 +161,7 @@
             android:layout_toEndOf="@id/reply"
             android:layout_centerVertical="true"
             android:layout_marginStart="2dp"
-            android:text="12"
+            android:text="0"
             tools:text="12"/>
 
         <ImageView
@@ -177,7 +180,6 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:layout_marginEnd="20dp"
-            android:text="123人围观"
             tools:text="123人围观"
             android:textSize="10sp"/>
 

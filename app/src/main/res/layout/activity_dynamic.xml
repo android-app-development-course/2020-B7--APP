@@ -30,8 +30,6 @@
     android:layout_height="match_parent">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
@@ -107,10 +105,20 @@
                         android:textSize="28sp"/>
 
                     <TextView
-                        android:id="@+id/user_content"
+                        android:id="@+id/user_fans"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="0关注者   1正在关注"
+                        android:text="0关注者"
+                        android:layout_below="@id/user_name"
+                        android:layout_toStartOf="@id/user_follow"
+                        android:layout_marginEnd="12dp"
+                        android:layout_marginTop="5dp"/>
+
+                    <TextView
+                        android:id="@+id/user_follow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1正在关注"
                         android:layout_below="@id/user_name"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="40dp"

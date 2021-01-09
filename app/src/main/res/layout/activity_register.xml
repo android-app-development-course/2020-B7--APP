@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/login_by_message_return"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@mipmap/arrow_back" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textColor="@android:color/black"
+        android:layout_gravity="center"
+        android:textSize="30sp"
+        android:text="账号注册" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/login_input_phone"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:ems="10"
+            android:hint="请输入用户名"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/login_input_code"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/login_input_phone"
+            android:layout_below="@+id/login_input_phone"
+            android:layout_marginTop="20dp"
+            android:hint="请输入密码"
+            android:inputType="textPassword" >
+        </EditText>
+
+        <Button
+            android:id="@+id/register_btn"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/login_input_code"
+            android:layout_below="@+id/login_input_code"
+            android:layout_marginTop="44dp"
+            android:text="注册"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/button_circle_shape"
+            />
+
+    </RelativeLayout>
+
+</LinearLayout>

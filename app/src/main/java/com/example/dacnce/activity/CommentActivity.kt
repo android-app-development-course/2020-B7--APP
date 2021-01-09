@@ -1,25 +1,38 @@
 package com.example.dacnce.activity
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AbsListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import cn.bmob.v3.BmobQuery
+import cn.bmob.v3.exception.BmobException
+import cn.bmob.v3.listener.QueryListener
+import com.bumptech.glide.Glide
 import com.example.dacnce.R
+import com.example.dacnce.adapter.DynamicPictureAdapter
+import com.example.dacnce.bean.PictureItem
+import com.example.dacnce.bean.PostModel
 import com.example.dacnce.comment.LocalServer
+import com.example.dacnce.utils.NetworkUtils
+import com.example.dacnce.utils.TextViewSuffixWrapper
 import com.google.gson.Gson
 import com.jidcoo.android.widget.commentview.CommentView
 import com.jidcoo.android.widget.commentview.callback.*
 import com.jidcoo.android.widget.commentview.defaults.DefaultCommentModel
 import com.jidcoo.android.widget.commentview.defaults.DefaultCommentModel.Comment.Reply
 import com.jidcoo.android.widget.commentview.defaults.DefaultViewStyleConfigurator
-import kotlinx.android.synthetic.main.activity_dynamic.*
+import es.dmoral.toasty.Toasty
 import kotlinx.android.synthetic.main.comment_detail.*
 import kotlinx.android.synthetic.main.editor.*
+import kotlinx.android.synthetic.main.item_dynamic.*
 
 class CommentActivity : AppCompatActivity() {
 
@@ -33,6 +46,8 @@ class CommentActivity : AppCompatActivity() {
     var pid: Long = 0
     var cp: Int = 0
     var rp: Int = 0
+
+    var objectId = "0"
 
     private val handler: Handler = @SuppressLint("HandlerLeak")
     object : Handler() {
@@ -79,61 +94,163 @@ class CommentActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "详情"
 
-        gson = Gson();
-        localServer = LocalServer(this, "api1");
-        commentView = findViewById(R.id.myCommentView);//初始化控件
-        commentView.setViewStyleConfigurator(DefaultViewStyleConfigurator(this));
-        commentView.callbackBuilder()
-            //下拉刷新回调
-            .setOnPullRefreshCallback(MyOnPullRefreshCallback())
-            //上拉加载更多回调（加载更多评论数据）
-            .setOnCommentLoadMoreCallback(MyOnCommentLoadMoreCallback())
-            //回复数据加载更多回调（加载更多回复）
-            .setOnReplyLoadMoreCallback(MyOnReplyLoadMoreCallback())
-            //评论、回复Item的点击回调（点击事件回调）
-            .setOnItemClickCallback(MyOnItemClickCallback())
-            //滚动事件回调
-            .setOnScrollCallback(MyOnScrollCallback())
-            //设置完成后必须调用CallbackBuilder的buildCallback()方法，否则设置的回调无效
-            .buildCallback();
+        objectId = intent.getStringExtra("objectId").toString()
 
-        button.setOnClickListener{
-            val userStr = user.text.toString()
-            val data = editor.text.toString()
-            if (!userStr.isEmpty() && !data.isEmpty()) {
-                if (isReply && isChildReply) {
-                    //现在需要构建一个回复数据实体类
-                    val reply = Reply()
-                    reply.setKid(fid)
-                    reply.setReplierName(userStr)
-                    reply.setReply(data)
-                    reply.setDate(System.currentTimeMillis())
-                    reply.setPid(pid)
-                    commentView.addReply(reply, cp)
-                } else if (isReply && !isChildReply) {
-                    //现在需要构建一个回复数据实体类
-                    val reply = Reply()
-                    reply.setKid(fid)
-                    reply.setReplierName(userStr)
-                    reply.setReply(data)
-                    reply.setDate(System.currentTimeMillis())
-                    reply.setPid(0)
-                    commentView.addReply(reply, cp)
-                } else {
-                    val comment = DefaultCommentModel.Comment()
-                    comment.setFid(System.currentTimeMillis())
-                    comment.setId(comment.getFid() + 1)
-                    comment.setDate(comment.getFid())
-                    comment.setPid(0)
-                    comment.setPosterName(userStr)
-                    comment.setComment(data)
-                    commentView.addComment(comment)
+        if(!(objectId == "0" || objectId == null || objectId == "null")){
+            if(NetworkUtils.isConnected()){
+
+                refreshUI()
+
+                gson = Gson();
+                localServer = LocalServer(this, "api1");
+                commentView = findViewById(R.id.myCommentView);//初始化控件
+                commentView.setViewStyleConfigurator(DefaultViewStyleConfigurator(this));
+                commentView.callbackBuilder()
+                    //下拉刷新回调
+                    .setOnPullRefreshCallback(MyOnPullRefreshCallback())
+                    //上拉加载更多回调（加载更多评论数据）
+                    .setOnCommentLoadMoreCallback(MyOnCommentLoadMoreCallback())
+                    //回复数据加载更多回调（加载更多回复）
+                    .setOnReplyLoadMoreCallback(MyOnReplyLoadMoreCallback())
+                    //评论、回复Item的点击回调（点击事件回调）
+                    .setOnItemClickCallback(MyOnItemClickCallback())
+                    //滚动事件回调
+                    .setOnScrollCallback(MyOnScrollCallback())
+                    //设置完成后必须调用CallbackBuilder的buildCallback()方法，否则设置的回调无效
+                    .buildCallback();
+
+                button.setOnClickListener{
+                    val userStr = user.text.toString()
+                    val data = editor.text.toString()
+                    if (!userStr.isEmpty() && !data.isEmpty()) {
+                        if (isReply && isChildReply) {
+                            //现在需要构建一个回复数据实体类
+                            val reply = Reply()
+                            reply.setKid(fid)
+                            reply.setReplierName(userStr)
+                            reply.setReply(data)
+                            reply.setDate(System.currentTimeMillis())
+                            reply.setPid(pid)
+                            commentView.addReply(reply, cp)
+                        } else if (isReply && !isChildReply) {
+                            //现在需要构建一个回复数据实体类
+                            val reply = Reply()
+                            reply.setKid(fid)
+                            reply.setReplierName(userStr)
+                            reply.setReply(data)
+                            reply.setDate(System.currentTimeMillis())
+                            reply.setPid(0)
+                            commentView.addReply(reply, cp)
+                        } else {
+                            val comment = DefaultCommentModel.Comment()
+                            comment.setFid(System.currentTimeMillis())
+                            comment.setId(comment.getFid() + 1)
+                            comment.setDate(comment.getFid())
+                            comment.setPid(0)
+                            comment.setPosterName(userStr)
+                            comment.setComment(data)
+                            commentView.addComment(comment)
+                        }
+                    } else {
+                        //Toast.makeText(this, "用户名和内容都不能为空", Toast.LENGTH_LONG).show()
+                    }
                 }
-            } else {
-                //Toast.makeText(this, "用户名和内容都不能为空", Toast.LENGTH_LONG).show()
+                load(1, 1);
+            }else{
+                Toasty.error(this,"没有网络连接",Toast.LENGTH_SHORT).show()
             }
         }
-        load(1, 1);
+
+    }
+
+    //初始化上部分UI数据s
+    private fun refreshUI(){
+        val bmobQuery: BmobQuery<PostModel> = BmobQuery()
+        bmobQuery.include("user")
+        bmobQuery.getObject(objectId,object:QueryListener<PostModel>(){
+            override fun done(post: PostModel?, ex: BmobException?) {
+                if(ex == null){
+                    if(post!=null){
+                        runOnUiThread{
+                            //Log.d("objectId",post.toString())
+                            var isVideo = false
+                            var videoPath = "NoPath"
+
+                            if (post.pic_or_mov == "mov") {
+                                isVideo = true
+                                videoPath = post.post_mov_path
+                            }
+
+                            val picItemList = ArrayList<PictureItem>()
+                            val picPaths = post.post_pic_path.split(",")
+                            if (picPaths.isNotEmpty()) {
+                                for (i in 0 until picPaths.size - 1) {
+                                    picItemList.add(PictureItem(picPaths[i], isVideo,videoPath))
+                                }
+                            }
+
+                            //Log.d("CommentActivity",NetworkUtils.PIC_PRE_PATH + "/images" + post.user.image_url)
+                            Glide.with(this@CommentActivity)
+                                .load(NetworkUtils.PIC_PRE_PATH + "/images" + post.user.image_url)
+                                .placeholder(R.drawable.nav_icon)
+                                .into(user_image)
+
+                            user_name.text = post.user.user_nickname
+
+                            if(post.post_content != ""){
+                                TextViewSuffixWrapper(content_main).apply wrapper@{
+                                    this.mainContent = post.post_content
+                                    this.suffix = "...查看更多"
+                                    this.suffix?.apply {
+                                        suffixColor("...".length, this.length, R.color.gray2, listener = View.OnClickListener { view ->
+                                        })
+                                    }
+                                    this.transition?.duration = 500
+                                    collapse(false)
+                                    this.textView.setOnClickListener {
+                                        this@wrapper.toggle()
+                                    }
+                                }
+                            }else{
+                                content_main.visibility = View.GONE
+                            }
+                            lateinit var dynamicPictureAdapter: DynamicPictureAdapter
+                            if(isVideo){
+                                video_cardView.visibility = View.VISIBLE
+                                picture_recyclerView.visibility = View.GONE
+                                Glide.with(this@CommentActivity).load(picItemList[0].image.toString()).into(video_image)
+
+                                video_cardView.setOnClickListener{
+                                    val intent= Intent(this@CommentActivity,ShowMovActivity::class.java)
+                                    intent.putExtra("preview", picItemList[0].image)
+                                    intent.putExtra("url",picItemList[0].videoUrl)
+                                    startActivity(intent)
+                                }
+
+                            }else{
+                                video_cardView.visibility = View.GONE
+                                picture_recyclerView.visibility = View.VISIBLE
+                                val layoutManager = GridLayoutManager(this@CommentActivity,3)
+                                picture_recyclerView.layoutManager = layoutManager
+                                dynamicPictureAdapter = DynamicPictureAdapter(this@CommentActivity,picItemList)
+                                picture_recyclerView.adapter = dynamicPictureAdapter
+                            }
+
+                            like.setOnCheckStateChangeListener { view, checked ->
+                                if(checked){
+                                    like_number.text =  (like_number.text.toString().toInt() + 1).toString()
+                                }else{
+                                    like_number.text =  (like_number.text.toString().toInt() - 1).toString()
+                                }
+                            }
+                        }
+                    }
+                }else{
+
+                    Toast.makeText(this@CommentActivity, ex.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
     }
 
     private fun load(code: Int, handlerId: Int) {

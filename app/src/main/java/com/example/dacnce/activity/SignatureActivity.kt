@@ -1,11 +1,15 @@
 package com.example.dacnce.activity
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.example.dacnce.R
+import kotlinx.android.synthetic.main.activity_edit_name.*
 import kotlinx.android.synthetic.main.activity_signature.*
 
 class SignatureActivity : AppCompatActivity() {
@@ -18,6 +22,10 @@ class SignatureActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "修改个性签名"
 
+        val signature = intent.getStringExtra("signature")
+        if(signature != null){
+            sign_edit_view.setText(signature.toString())
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -30,11 +38,14 @@ class SignatureActivity : AppCompatActivity() {
             android.R.id.home -> {
                 //toolBar点击返回按钮，销毁单前activity
                 finish()
-                Toast.makeText(this,"Finish SignatureActivity", Toast.LENGTH_SHORT).show()
             }
             R.id.toolbarSave -> {
                 //数据库操作
-                Toast.makeText(this,"保存数据", Toast.LENGTH_SHORT).show()
+                val intent = Intent()
+                Log.i("onActivityResult",sign_edit_view.text.toString())
+                intent.putExtra("changeSignature",sign_edit_view.text.toString())
+                setResult(Activity.RESULT_OK,intent)
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)

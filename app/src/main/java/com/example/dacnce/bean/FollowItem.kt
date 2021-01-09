@@ -1,5 +1,10 @@
 package com.example.dacnce.bean
 
-class FollowItem(val user_image:Int,val user_name:String,val personal_signature:String) {
-
-}
+data class FollowItem(
+    val user_image:String,
+    val user_name:String,
+    val personal_signature:String,
+    val pictureList: ArrayList<FollowChildItem>,
+    val userObjectId: String,
+    val user: User
+)

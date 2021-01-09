@@ -8,27 +8,6 @@
     android:orientation="vertical"
     tools:context="com.example.dacnce.activity.PersonInfoActivity">
 
-    <!--    标题栏-->
-    <!--    <androidx.appcompat.widget.Toolbar-->
-    <!--        android:id="@+id/toolbar3"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:background="@color/colorPrimary"-->
-    <!--        android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar"-->
-    <!--        app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight">-->
-
-    <!--        <TextView-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_centerInParent="true"-->
-    <!--            android:layout_gravity="center"-->
-    <!--            android:text="编辑信息"-->
-    <!--            android:textColor="@android:color/white"-->
-    <!--            android:textSize="20sp" />-->
-
-
-    <!--    </androidx.appcompat.widget.Toolbar>-->
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarPeoInfo"
         android:layout_width="match_parent"
@@ -130,9 +109,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="不可修改的名字"
                     android:textColor="@color/black0"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="不可修改的名字" />
 
 
             </LinearLayout>
@@ -173,9 +152,9 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="可以修改的昵称"
                     android:textColor="@color/black0"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="可以修改的昵称" />
 
                 <ImageView
                     android:id="@+id/ig_name_edit"
@@ -222,14 +201,13 @@
                     android:textSize="15sp" />
 
                 <TextView
-
                     android:id="@+id/tv_sex"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="是什么啊"
                     android:textColor="@color/black0"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="是什么啊" />
 
                 <ImageView
                     android:id="@+id/ig_sex_edit"
@@ -276,14 +254,13 @@
                     android:textSize="15sp" />
 
                 <TextView
-
                     android:id="@+id/tv_birthday"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="几号啊"
                     android:textColor="@color/black0"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="几号啊" />
 
                 <ImageView
                     android:id="@+id/ig_signature_edit"
@@ -330,14 +307,13 @@
                     android:textSize="15sp" />
 
                 <TextView
-
                     android:id="@+id/tv_signature"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="是什么啊"
                     android:textColor="@color/black0"
-                    android:textSize="15sp" />
+                    android:textSize="15sp"
+                    tools:text="是什么啊" />
 
                 <ImageView
                     android:id="@+id/ig_birthday_edit"

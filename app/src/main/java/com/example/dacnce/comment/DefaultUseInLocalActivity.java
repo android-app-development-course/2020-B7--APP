@@ -74,7 +74,7 @@ public class DefaultUseInLocalActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.simple_use);
         setTitle("WidgetTest(默认样式)");
-        Log.d("texxxt","DefaultUse");
+        //Log.d("texxxt","DefaultUse");
         gson = new Gson();
         localServer = new LocalServer(this, "api1");
         user = findViewById(R.id.user);

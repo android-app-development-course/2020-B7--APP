@@ -7,6 +7,7 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
+        android:id="@+id/userInfo_rl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="18dp">
@@ -50,7 +51,7 @@
             android:id="@+id/content_main"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="这就是街舞，为自己而舞，请不要装酷。I say hei，这就是街舞，为自己而舞，请不要装酷。这就是街舞，为自己而舞，请不要装酷。这就是街舞，为自己而舞，请不要装酷。"
+            tools:text="这就是街舞，为自己而舞，请不要装酷。I say hei，这就是街舞，为自己而舞，请不要装酷。这就是街舞，为自己而舞，请不要装酷。这就是街舞，为自己而舞，请不要装酷。"
             android:paddingBottom="10dp"
             android:textSize="14sp"
             android:textColor="#323131"
@@ -92,9 +93,8 @@
                     android:id="@+id/video_image"
                     android:layout_width="match_parent"
                     android:layout_height="180dp"
-                    android:scaleType="centerCrop"
-                    android:background="@drawable/example3"
-                    />
+                    android:background="@color/white"
+                    android:scaleType="centerCrop" />
 
                 <ImageView
                     android:background="@drawable/play"
@@ -142,7 +142,7 @@
             android:layout_toEndOf="@id/like"
             android:layout_centerVertical="true"
             android:layout_marginStart="2dp"
-            android:text="12"
+            android:text="0"
             tools:text="12"/>
 
         <ImageView
@@ -161,7 +161,7 @@
             android:layout_toEndOf="@id/reply"
             android:layout_centerVertical="true"
             android:layout_marginStart="2dp"
-            android:text="12"
+            android:text="0"
             tools:text="12"/>
 
         <ImageView

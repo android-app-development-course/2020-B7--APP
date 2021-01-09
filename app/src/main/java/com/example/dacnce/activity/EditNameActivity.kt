@@ -1,7 +1,10 @@
 package com.example.dacnce.activity
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -18,6 +21,11 @@ class EditNameActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "修改昵称"
 
+        val nickname = intent.getStringExtra("nickName")
+        if(nickname != null){
+            name_edit_view.setText(nickname.toString())
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -30,11 +38,14 @@ class EditNameActivity : AppCompatActivity() {
             android.R.id.home -> {
                 //toolBar点击返回按钮，销毁单前activity
                 finish()
-                Toast.makeText(this,"Finish EditNameActivity", Toast.LENGTH_SHORT).show()
             }
             R.id.toolbarSave -> {
                 //数据库操作
-                Toast.makeText(this,"保存数据", Toast.LENGTH_SHORT).show()
+                val intent = Intent()
+                Log.i("onActivityResult",name_edit_view.text.toString())
+                intent.putExtra("changeNickName",name_edit_view.text.toString())
+                setResult(Activity.RESULT_OK,intent)
+                finish()
             }
         }
         return super.onOptionsItemSelected(item)

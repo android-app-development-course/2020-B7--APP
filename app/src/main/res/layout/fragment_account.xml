@@ -322,5 +322,15 @@
         android:text="密码登录"
         android:textColor="@color/white" />
 
+    <Button
+        android:id="@+id/login_out"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:background="@drawable/button_circle_gray"
+        android:text="退出登录"
+        android:textColor="@color/red1" />
 
 </LinearLayout>
