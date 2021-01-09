@@ -76,12 +76,9 @@ apk文件：[app-release.apk](app-release.apk)
 ```kotlin
 const val APP_ID = "ca1186997e987d6205110e4c23547afb"
 private const val PROTOCOL = "http://"
-private const val SEVER_IP = "10.242.174.63"
+private const val SEVER_IP = "127.0.0.1"
 private const val PORT = "8080"
 private const val COM = "$PROTOCOL$SEVER_IP:$PORT"
-
-//IP1:10.243.129.166
-//IP2:192.168.43.178
 
 //文件保存路径
 const val PIC_PRE_PATH = "$COM/DanceFile"
